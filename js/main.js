@@ -21,13 +21,13 @@ const data = [
   {year: 2016, doctors: 54500, medWorkers: 125800, hospitals: 636, beds: 83000, polyclinics: 2311},
 ];
 
-const CONTAINER_W = d3.select('container').style('width');
+const CONTAINER_W = parseFloat(d3.select('container').style('width'));
 
 const margin = {top: 10, right: 10, bottom: 10, left: 10},
-  width = CONTAINER_W - margin.left - margin.right,
-  height = CONTAINER_W - margin.top - margin.bottom;
+      width = CONTAINER_W - margin.left - margin.right,
+      height = CONTAINER_W / 2 - margin.top - margin.bottom - 60;
 
-const svg = d3.select("section").append("svg")
+const svg = d3.select("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
