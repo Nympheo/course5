@@ -19,15 +19,15 @@ const data = [
   {year: 2014, doctors: 51100, medWorkers: 123900, hospitals: 641, beds: 82300, polyclinics: 2309},
   {year: 2015, doctors: 53200, medWorkers: 126100, hospitals: 640, beds: 82000, polyclinics: 2325},
   {year: 2016, doctors: 54500, medWorkers: 125800, hospitals: 636, beds: 83000, polyclinics: 2311},
-]
+];
 
+const CONTAINER_W = d3.select('container').style('width');
 
-console.log(d3.select('container').style('width'));
-// const margin = {top: 10, right: 10, bottom: 10, left: 10},
-//   width = CONTAINER_W - margin.left - margin.right,
-//   height = CONTAINER_W - margin.top - margin.bottom;
+const margin = {top: 10, right: 10, bottom: 10, left: 10},
+  width = CONTAINER_W - margin.left - margin.right,
+  height = CONTAINER_W - margin.top - margin.bottom;
 
-const svg = d3.select(".container").append("svg")
+const svg = d3.select("section").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
