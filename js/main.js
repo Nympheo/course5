@@ -21,9 +21,15 @@ const data = [
   {year: 2016, doctors: 54500, medWorkers: 125800, hospitals: 636, beds: 83000, polyclinics: 2311},
 ];
 
+const colors = {doctors: 'rgb(60, 132, 164)',
+                medWorkers: 'rgb(104, 53, 133)',
+                hospitals: 'rgb(212, 13, 78)',
+                beds: 'rgb(0, 182, 46)',
+                polyclinics: 'rgb(224, 251, 0)'};
+
 const CONTAINER_W = parseFloat(d3.select('container').style('width'));
 
-const margin = {top: 10, right: 10, bottom: 10, left: 10},
+const margin = {top: 20, right: 30, bottom: 20, left: 70},
       width = CONTAINER_W - margin.left - margin.right,
       height = CONTAINER_W / 2 - margin.top - margin.bottom - 80;
 
@@ -32,3 +38,49 @@ const svg = d3.select("svg")
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+const xScale = d3.scaleBand()
+                 .domain(data.map(d => d.year))
+                 .range([0, width]);
+
+const yScale = d3.scaleLinear()
+                 .domain([0, 125000])
+                 .range([height, 0]);
+
+
+const axisX = svg.append("g")
+   .attr("class", "axis axis--x")
+   .attr("transform", "translate(0, " + height + ")")
+   .call(d3.axisBottom(xScale));
+
+const axisY = svg.append("g")
+   .attr("class", "axis axis--y")
+   .attr("transform", "translate(" + width + ", 0)")
+   .call(d3.axisLeft(yScale).tickSizeInner(width));
+ axisY.select(".domain").remove();
+ axisY.selectAll(".tick:not(:first-of-type) line")
+       .attr("stroke", "#777")
+       .attr("stroke-dasharray", "2,2");
+
+
+  d3.selectAll('input').on('change', render);
+
+  function render() {
+    let value = this.value;
+    console.log(d3.select('path#'+value));
+    let line = d3.line()
+                 .x(d => xScale(d.year))
+                 .y(d => yScale(d[value]))
+                 .curve(d3.curveBasis);
+
+    svg.append('path')
+      .datum(data)
+      .attr('fill', 'none')
+      .attr('stroke', d => colors[value])
+      .attr('stroke-width', 3)
+      .attr('stroke-linejoin', 'round')
+      .attr('stroke-linecap', 'round')
+      .attr('id', value)
+      .attr('d', line);
+
+  }
