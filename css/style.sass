@@ -40,6 +40,49 @@ section
 	background-size: 245px
 	background-blend-mode: overlay
 
+form
+	text-align: center
+
+$labelColor: rgb(136, 136, 136)
+
+label
+	color: $labelColor
+	display: inline-block
+	cursor: pointer
+	font-weight: bold
+	padding: 3px 20px
+	margin-left: -4px
+
+input[type=radio]:checked + label
+	color: rgb(15, 15, 15)
+	background: $labelColor
+
+input[type=checkbox]:checked + label
+	color: rgb(15, 15, 15)
+	background: $labelColor
+
+input[type=radio]
+	visibility: hidden
+	display: none
+
+input[type=checkbox]
+	visibility: hidden
+	display: none
+
+label + input[type=radio] + label
+	border-left: solid 3px $labelColor
+
+.radio-group
+	border: solid 3px $labelColor
+	display: inline-block
+	border-radius: 3px
+
+.check-group
+	border: solid 3px $labelColor
+	display: inline-block
+	border-radius: 3px
+	margin-top: -3px
+
 footer
 	width: $width
 	height: 25px

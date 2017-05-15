@@ -25,7 +25,7 @@ const CONTAINER_W = parseFloat(d3.select('container').style('width'));
 
 const margin = {top: 10, right: 10, bottom: 10, left: 10},
       width = CONTAINER_W - margin.left - margin.right,
-      height = CONTAINER_W / 2 - margin.top - margin.bottom - 60;
+      height = CONTAINER_W / 2 - margin.top - margin.bottom - 80;
 
 const svg = d3.select("svg")
     .attr("width", width + margin.left + margin.right)
