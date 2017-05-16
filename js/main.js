@@ -54,33 +54,39 @@ const axisX = svg.append("g")
    .call(d3.axisBottom(xScale));
 
 const axisY = svg.append("g")
-   .attr("class", "axis axis--y")
-   .attr("transform", "translate(" + width + ", 0)")
-   .call(d3.axisLeft(yScale).tickSizeInner(width));
- axisY.select(".domain").remove();
- axisY.selectAll(".tick:not(:first-of-type) line")
-       .attr("stroke", "#777")
-       .attr("stroke-dasharray", "2,2");
+     .attr("class", "axis axis--y")
+     .attr("transform", "translate(" + width + ", 0)")
+     .call(d3.axisLeft(yScale).tickSizeInner(width));
+   axisY.select(".domain").remove();
+   axisY.selectAll(".tick:not(:first-of-type) line")
+         .attr("stroke", "#777")
+         .attr("stroke-dasharray", "2,2");
+
 
 
   d3.selectAll('input').on('change', render);
 
   function render() {
     let value = this.value;
-    console.log(d3.select('path#'+value));
-    let line = d3.line()
-                 .x(d => xScale(d.year))
-                 .y(d => yScale(d[value]))
-                 .curve(d3.curveBasis);
+    let label = d3.select(`label[for=${this.id}]`);
+    if(!d3.select('path#' + value)._groups[0][0]){
+      label.style('background', colors[value]);
+      let line = d3.line()
+                   .x(d => xScale(d.year))
+                   .y(d => yScale(d[value]))
+                   .curve(d3.curveBasis);
 
-    svg.append('path')
-      .datum(data)
-      .attr('fill', 'none')
-      .attr('stroke', d => colors[value])
-      .attr('stroke-width', 3)
-      .attr('stroke-linejoin', 'round')
-      .attr('stroke-linecap', 'round')
-      .attr('id', value)
-      .attr('d', line);
-
+      svg.append('path')
+        .datum(data)
+        .attr('fill', 'none')
+        .attr('stroke', d => colors[value])
+        .attr('stroke-width', 3)
+        .attr('stroke-linejoin', 'round')
+        .attr('stroke-linecap', 'round')
+        .attr('id', value)
+        .attr('d', line);
+    } else {
+      label.style('background', null);
+      d3.select('path#' + value)._groups[0][0].remove();
+    }
   }
