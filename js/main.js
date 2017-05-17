@@ -38,7 +38,7 @@ const svg = d3.select("svg")
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
+//--------------SCALES-------------------
 const xScale = d3.scaleBand()
                  .domain(data.map(d => d.year))
                  .range([0, width]);
@@ -46,22 +46,33 @@ const xScale = d3.scaleBand()
 const yScale = d3.scaleLinear()
                  .domain([0, 125000])
                  .range([height, 0]);
-
-
+//--------------AXES---------------------
 const axisX = svg.append("g")
-   .attr("class", "axis axis--x")
-   .attr("transform", "translate(0, " + height + ")")
-   .call(d3.axisBottom(xScale));
+                 .attr("class", "axis axis--x")
+                 .attr("transform", "translate(0, " + height + ")")
+                 .call(d3.axisBottom(xScale));
 
 const axisY = svg.append("g")
-     .attr("class", "axis axis--y")
-     .attr("transform", "translate(" + width + ", 0)")
-     .call(d3.axisLeft(yScale).tickSizeInner(width));
+                 .attr("class", "axis axis--y")
+                 .attr("transform", "translate(" + width + ", 0)")
+                 .call(d3.axisLeft(yScale).tickSizeInner(width));
    axisY.select(".domain").remove();
    axisY.selectAll(".tick:not(:first-of-type) line")
          .attr("stroke", "#777")
          .attr("stroke-dasharray", "2,2");
+//------------ZOOM-------------
+// const zoom = d3.zoom()
+//                .scaleExtent([1, 32])
+//                .translateExtent([0, 0], [width, height])
+//                .extent([0, 0], [width, height])
+//                .on('zoom', zoomed);
 
+// function zoomed() {
+//   const t = d3.event.transform,
+//         xt = t.rescaleX(yScale);
+//   svg.selectAll('path').attr('d', line.x(d => d.year));
+//   svg.select('.axis--x').call(axisX.scale(xt));
+// };
 
 
   d3.selectAll('input').on('change', render);
@@ -75,6 +86,12 @@ const axisY = svg.append("g")
                    .x(d => xScale(d.year))
                    .y(d => yScale(d[value]))
                    .curve(d3.curveBasis);
+
+      // svg.call(zoom).transition()
+      //               .duration(1500)
+      //               .call(zoom.transform, d3.zoomIdentity
+      //                   .scale(width / (xScale(data[0].year) - xScale(data[17].year)))
+      //                   .translate(-xScale(data[0].year), 0));
 
       svg.append('path')
         .datum(data)
