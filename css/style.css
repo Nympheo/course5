@@ -41,20 +41,19 @@ form {
   text-align: center; }
 
 label {
-  color: #888888;
+  color: #b1afaf;
   display: inline-block;
   cursor: pointer;
-  font-weight: bold;
   padding: 3px 20px;
   margin-left: -4px; }
 
 input[type=radio]:checked + label {
   color: #0f0f0f;
-  background: #888888; }
+  background: #b1afaf; }
 
 input[type=checkbox]:checked + label {
   color: #0f0f0f;
-  background: #888888; }
+  background: #b1afaf; }
 
 input[type=radio] {
   visibility: hidden;
@@ -65,18 +64,19 @@ input[type=checkbox] {
   display: none; }
 
 label + input[type=radio] + label {
-  border-left: solid 3px #888888; }
+  border-left: solid 3px #b1afaf; }
 
 .radio-group {
-  border: solid 3px #888888;
-  display: inline-block;
-  border-radius: 3px; }
-
-.check-group {
-  border: solid 3px #888888;
+  border: solid 2px #b1afaf;
   display: inline-block;
   border-radius: 3px;
-  margin-top: -3px; }
+  margin-top: 9px; }
+
+.check-group {
+  border: solid 2px #b1afaf;
+  display: inline-block;
+  border-radius: 3px;
+  margin-top: 7px; }
 
 footer {
   width: 1224px;
@@ -89,5 +89,11 @@ article {
   margin: auto; }
   article a {
     color: #666666; }
+
+line {
+  shape-rendering: crispEdges; }
+
+path {
+  shape-rendering: geometricPrecision; }
 
 /*# sourceMappingURL=style.css.map */
