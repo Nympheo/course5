@@ -38,10 +38,7 @@ const svg = d3.select("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-const layout = svg.append('rect')
-                  .attr('width', width)
-                  .attr('height', height)
-                  .attr('fill', 'white');
+const layout = svg.append('g');
 //--------------SCALES---------------------------------------
 const xScale = d3.scaleTime()
                  .domain([new Date(2000,01,01), new Date(2016,01,01)])
@@ -51,6 +48,7 @@ const yScale = d3.scaleLinear()
                  .range([height, 0])
                  .domain([0, 125000]);
 
+const yScaleStream = d3.
 //--------------AXES----------------------------------------
 const xx = d3.axisBottom(xScale)
              .ticks(width / height * 5);
@@ -62,7 +60,7 @@ const axisX = svg.append("g")
                  .attr("transform", "translate(0, " + height + ")")
                  .call(xx);
 
-const axisY = svg.append("g")
+let axisY = svg.append("g")
                  .attr("transform", "translate(" + width + ", 0)")
                  .call(yy);
    axisY.select(".domain").remove();
@@ -89,6 +87,17 @@ function zoomed() {
 
 //-------------RENDER----------------------------------------------
   d3.selectAll('input').on('change', render);
+  d3.selectAll('input').on('click', change);
+
+
+  let activeView = 'radio-2';
+  function change() {
+    let view = d3.select(this).attr('id');
+    if(activeView == view) draw() ;
+  }
+
+
+
 
   function render() {
     let value = this.value;
