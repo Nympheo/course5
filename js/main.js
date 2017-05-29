@@ -122,11 +122,25 @@ function zoomed() {
   }
 
   function drawHist(activeTabs) {
-
+    let domain = activeTabs.reduce((acc, e) => acc + data[e], 0);
+    console.log(domain);
+    yScale.domain([0, domain]);
+    axisY.remove();
+    axisY = svg.append("g")
+                     .attr("transform", "translate(" + width + ", 0)")
+                     .call(yy);
+       axisY.select(".domain").remove();
+       axisY.selectAll(".tick:not(:first-of-type) line")
+             .attr("stroke", "#777")
+             .attr("stroke-dasharray", "2,2");
   }
 
   function drawPath(value) {
-    yScale.domain([0, 125000]);
+    let activeTabs = d3.selectAll('.active')._groups[0];
+    activeTabs = Array.from(activeTabs).map(e => e.value);
+    let domain = activeTabs.map(e => d3.max(data, d => d[e]));
+    domain = d3.max(domain);
+    yScale.domain([0, domain]);
     axisY.remove();
     axisY = svg.append("g")
                      .attr("transform", "translate(" + width + ", 0)")
@@ -153,7 +167,9 @@ function zoomed() {
   }
 
   function drawStream(activeTabs) {
-    yScale.domain([0, 300000]);
+    let domain = activeTabs.map(e => d3.max(data, d => d[e]));
+    domain = d3.sum(domain);
+    yScale.domain([0, domain]);
     axisY.remove();
     axisY = svg.append("g")
                      .attr("transform", "translate(" + width + ", 0)")
