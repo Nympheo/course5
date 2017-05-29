@@ -48,7 +48,6 @@ const yScale = d3.scaleLinear()
                  .range([height, 0])
                  .domain([0, 125000]);
 
-const yScaleStream = d3.
 //--------------AXES----------------------------------------
 const xx = d3.axisBottom(xScale)
              .ticks(width / height * 5);
@@ -86,40 +85,99 @@ function zoomed() {
 };
 
 //-------------RENDER----------------------------------------------
-  d3.selectAll('input').on('change', render);
-  d3.selectAll('input').on('click', change);
+  d3.selectAll('input.group1').on('change', change);
+  d3.selectAll('input.group2').on('click', toggleActive);
+  d3.selectAll('input.group2').on('change', render);
 
-
-  let activeView = 'radio-2';
+  let view = 'radio-2';
   function change() {
-    let view = d3.select(this).attr('id');
-    if(activeView == view) draw() ;
+    view = d3.select(this).attr('id');
+    render();
   }
 
-
-
+  function toggleActive() {
+    d3.select(this).classed('active', !d3.select(this).classed('active'));
+    let label = d3.select(`label[for=${this.id}]`);
+    let value = this.value;
+    d3.select(this).classed('active')
+        ? label.style('background', colors[value])
+        : label.style('background', null);
+  }
 
   function render() {
-    let value = this.value;
-    let label = d3.select(`label[for=${this.id}]`);
-    if(!d3.select('path#' + value)._groups[0][0]){
-      label.style('background', colors[value]);
-      let line = d3.line()
-                   .x(d => xScale(new Date(d.year)))
-                   .y(d => yScale(d[value]))
-                   .curve(d3.curveBasis);
-
-      layout.append('path')
-        .datum(data)
-        .attr('fill', 'none')
-        .attr('stroke', d => colors[value])
-        .attr('stroke-width', 3)
-        .attr('stroke-linejoin', 'round')
-        .attr('stroke-linecap', 'round')
-        .attr('id', value)
-        .attr('d', line);
-    } else {
-      label.style('background', null);
-      d3.select('path#' + value)._groups[0][0].remove();
+    layout.selectAll('path').remove();
+    let activeTabs = d3.selectAll('.active')._groups[0];
+    activeTabs = Array.from(activeTabs).map(e => e.value);
+    let reqFun = (view == 'radio-1') ? drawHist
+               : (view == 'radio-2') ? drawPath
+               : drawStream;
+    if(reqFun == drawPath){
+      for(let i = 0; i < activeTabs.length; i++){
+        reqFun(activeTabs[i]);
+      }
     }
+    else if (reqFun == drawStream) {
+      reqFun(activeTabs);
+    }
+  }
+
+  function drawHist(activeTabs) {
+
+  }
+
+  function drawPath(value) {
+    yScale.domain([0, 125000]);
+    axisY.remove();
+    axisY = svg.append("g")
+                     .attr("transform", "translate(" + width + ", 0)")
+                     .call(yy);
+       axisY.select(".domain").remove();
+       axisY.selectAll(".tick:not(:first-of-type) line")
+             .attr("stroke", "#777")
+             .attr("stroke-dasharray", "2,2");
+
+    let line = d3.line()
+                 .x(d => xScale(new Date(d.year)))
+                 .y(d => yScale(d[value]))
+                 .curve(d3.curveBasis);
+
+        layout.append('path')
+          .datum(data)
+          .attr('fill', 'none')
+          .attr('stroke', d => colors[value])
+          .attr('stroke-width', 3)
+          .attr('stroke-linejoin', 'round')
+          .attr('stroke-linecap', 'round')
+          .attr('id', value)
+          .attr('d', line);
+  }
+
+  function drawStream(activeTabs) {
+    yScale.domain([0, 300000]);
+    axisY.remove();
+    axisY = svg.append("g")
+                     .attr("transform", "translate(" + width + ", 0)")
+                     .call(yy);
+       axisY.select(".domain").remove();
+       axisY.selectAll(".tick:not(:first-of-type) line")
+             .attr("stroke", "#777")
+             .attr("stroke-dasharray", "2,2");
+
+    let area = d3.area()
+      .x(function(d) {return xScale(new Date(d.data.year))})
+      .y0(d => yScale(d[0]))
+      .y1(d => yScale(d[1]))
+      .curve(d3.curveCatmullRom);
+
+    let stack = d3.stack()
+      .keys([...activeTabs])
+      .order(d3.stackOrderInsideout)
+      .offset(d3.stackOffsetWiggle);
+
+   layout.selectAll('path')
+      .data(stack(data))
+      .enter()
+      .append('path')
+      .style('fill', (d, i) => colors[activeTabs[i]])
+      .attr('d', area);
   }
