@@ -142,7 +142,7 @@ function zoomed() {
 
 //---------------------DRAW FUNCS----------------------------------------
   function drawHist(activeTabs) {
-    let domain = activeTabs.reduce((acc, e) => acc + data[e], 0);
+    let domain = activeTabs.map(e => d3.max(data, d => d[e]));
     domain = d3.max(domain);
     yScale.domain([0, domain]);
     axisY.remove();
@@ -154,10 +154,10 @@ function zoomed() {
              .attr("stroke", "#777")
              .attr("stroke-dasharray", "2,2");
 
-    // axisX.remove();
-    axisXnarrow = svg.append("g")
-                 .attr("transform", `translate(0,${height-30})`)
-                 .call(xxBandN);
+    // axisXnarrow = svg.append("g")
+    //              .attr("transform", `translate(0,${height-20})`)
+    //              .call(xxBandN)
+    //              .selectAll('text').remove();
 
     layout.selectAll('g')
           .data(data)
@@ -165,8 +165,15 @@ function zoomed() {
                   .attr('transform', function(d){
                     return `translate(${xScale(new Date(d.year))}, 0)`})
                   .selectAll('rect')
-                  .attr('x', )
-
+                  .data(d => Object.keys(colors).map((key) => {
+                    return {key: key, value: d[key]}
+                  }))
+                  .enter().append('rect')
+                  .attr('x', d => xBandNarrow(d.key))
+                  .attr('y', d => 50)
+                  .attr('width', xBandNarrow.bandwidth())
+                  .attr('heigth', d => height - yScale(d.value))
+                  .attr('fill', d => colors[d.key]);
   }
 
   function drawPath(value) {
