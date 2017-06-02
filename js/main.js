@@ -122,6 +122,7 @@ function zoomed() {
 
   function render() {
     layout.selectAll('path').remove();
+    layout.selectAll('.hist').remove();
     let activeTabs = d3.selectAll('.active')._groups[0];
     activeTabs = Array.from(activeTabs).map(e => e.value);
     let reqFun = (view == 'radio-1') ? drawHist
@@ -162,6 +163,7 @@ function zoomed() {
     layout.selectAll('g')
           .data(data)
           .enter().append('g')
+                  .classed('hist', true)
                   .attr('transform', function(d){
                     return `translate(${xScale(new Date(d.year))}, 0)`})
                   .selectAll('rect')
