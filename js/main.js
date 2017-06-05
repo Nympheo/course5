@@ -20,11 +20,11 @@ const data = [
   {year: '2016,01,01', doctors: 54500, medWorkers: 125800, hospitals: 636, beds: 83000, polyclinics: 2311},
 ];
 
-const colors = {doctors: 'rgb(60, 132, 164)',
-                medWorkers: 'rgb(104, 53, 133)',
-                hospitals: 'rgb(212, 13, 78)',
-                beds: 'rgb(0, 182, 46)',
-                polyclinics: 'rgb(224, 251, 0)'};
+const colors = {doctors: "#98abc5",
+                medWorkers: "#6b486b",
+                hospitals: "#a05d56",
+                beds: "#d0743c",
+                polyclinics: "#ff8c00"};
 
 const CONTAINER_W = parseFloat(d3.select('container').style('width'));
 
@@ -48,12 +48,28 @@ const yScale = d3.scaleLinear()
                  .range([height, 0])
                  .domain([0, 125000]);
 
+const xBandWide = d3.scaleBand()
+                    .rangeRound([0, width])
+                    .paddingInner(0.1)
+                    .domain(data.map(e=>e.year.slice(0,4)));
+
+const xBandNarrow = d3.scaleBand()
+                      .padding(0.05)
+                      .domain(Object.keys(colors))
+                      .rangeRound([0, xBandWide.bandwidth()]);
+
 //--------------AXES----------------------------------------
 const xx = d3.axisBottom(xScale)
              .ticks(width / height * 5);
 const yy = d3.axisLeft(yScale)
              .ticks(width / height * 5)
              .tickSizeInner(width);
+// const xxBandW = d3.axisBottom(xBandWide)
+//                   .ticks(width / height * 5);
+const xxBandN = d3.axisBottom(xBandNarrow)
+                  .ticks(width / height * 5);
+
+var axisXnarrow;
 
 const axisX = svg.append("g")
                  .attr("transform", "translate(0, " + height + ")")
@@ -106,6 +122,7 @@ function zoomed() {
 
   function render() {
     layout.selectAll('path').remove();
+    layout.selectAll('.hist').remove();
     let activeTabs = d3.selectAll('.active')._groups[0];
     activeTabs = Array.from(activeTabs).map(e => e.value);
     let reqFun = (view == 'radio-1') ? drawHist
@@ -119,11 +136,15 @@ function zoomed() {
     else if (reqFun == drawStream) {
       reqFun(activeTabs);
     }
+    else if (reqFun == drawHist) {
+      reqFun(activeTabs);
+    }
   }
 
+//---------------------DRAW FUNCS----------------------------------------
   function drawHist(activeTabs) {
-    let domain = activeTabs.reduce((acc, e) => acc + data[e], 0);
-    console.log(domain);
+    let domain = activeTabs.map(e => d3.max(data, d => d[e]));
+    domain = d3.max(domain);
     yScale.domain([0, domain]);
     axisY.remove();
     axisY = svg.append("g")
@@ -133,6 +154,28 @@ function zoomed() {
        axisY.selectAll(".tick:not(:first-of-type) line")
              .attr("stroke", "#777")
              .attr("stroke-dasharray", "2,2");
+
+    // axisXnarrow = svg.append("g")
+    //              .attr("transform", `translate(0,${height-20})`)
+    //              .call(xxBandN)
+    //              .selectAll('text').remove();
+
+    layout.selectAll('g')
+          .data(data)
+          .enter().append('g')
+                  .classed('hist', true)
+                  .attr('transform', function(d){
+                    return `translate(${xScale(new Date(d.year))}, 0)`})
+                  .selectAll('rect')
+                  .data(d => Object.keys(colors).map((key) => {
+                    return {key: key, value: d[key]}
+                  }))
+                  .enter().append('rect')
+                  .attr('x', d => xBandNarrow(d.key))
+                  .attr('y', d => 50)
+                  .attr('width', xBandNarrow.bandwidth())
+                  .attr('heigth', d => height - yScale(d.value))
+                  .attr('fill', d => colors[d.key]);
   }
 
   function drawPath(value) {
