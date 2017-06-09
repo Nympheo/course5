@@ -38,7 +38,9 @@ const svg = d3.select("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-const layout = svg.append('g');
+const layout = svg.append('g')
+    .attr("transform", "translate(0 ,0)");
+
 //--------------SCALES---------------------------------------
 const xScale = d3.scaleTime()
                  .domain([new Date(2000,01,01), new Date(2016,01,01)])
@@ -155,11 +157,6 @@ function zoomed() {
              .attr("stroke", "#777")
              .attr("stroke-dasharray", "2,2");
 
-    // axisXnarrow = svg.append("g")
-    //              .attr("transform", `translate(0,${height-20})`)
-    //              .call(xxBandN)
-    //              .selectAll('text').remove();
-
     layout.selectAll('g')
           .data(data)
           .enter().append('g')
@@ -172,9 +169,9 @@ function zoomed() {
                   }))
                   .enter().append('rect')
                   .attr('x', d => xBandNarrow(d.key))
-                  .attr('y', d => 50)
+                  .attr('y', d => height - 30)
                   .attr('width', xBandNarrow.bandwidth())
-                  .attr('heigth', d => height - yScale(d.value))
+                  .attr('height', d => yScale(d.value))
                   .attr('fill', d => colors[d.key]);
   }
 
