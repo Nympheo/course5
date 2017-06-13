@@ -169,9 +169,12 @@ function zoomed() {
                   }))
                   .enter().append('rect')
                   .attr('x', d => xBandNarrow(d.key))
-                  .attr('y', d => height - 30)
+                  .attr('y', d => yScale(d.value))
                   .attr('width', xBandNarrow.bandwidth())
-                  .attr('height', d => yScale(d.value))
+                  .attr('height', function(d) {
+                    return (activeTabs.includes(d.key)) ?
+                      height - yScale(d.value) : 0;
+                  })
                   .attr('fill', d => colors[d.key]);
   }
 
